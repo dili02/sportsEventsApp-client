@@ -6,14 +6,15 @@ import { Button, Form, FormGroup, Label, Input, Container, Alert } from 'reactst
 import cameraIcon from '../../assets/camera.png'
 import './styles.css'
 
-export default function Events () {
+export default function Events ({history}) {
    const [description, setDescription] = React.useState('')
    const [price, setPrice] = React.useState('')
    const [thumbnail, setThumbnail] = React.useState(null)
    const [date, setDate] = React.useState('')
    const [sport, setSport] = React.useState('')
    const [title, setTitle] = React.useState('')
-   const [errorMessage, setErrorMessage] = React.useState(false)
+   const [error, setError] = React.useState(false)
+   const [success, setSuccess] = React.useState(false)
    const preview = React.useMemo(() => {
       return thumbnail ? URL.createObjectURL(thumbnail) : null
    }, [thumbnail])
@@ -32,10 +33,14 @@ export default function Events () {
       try {
          if (title !== "" && description !== "" && sport !== "" && price !== "" && date !== "" && thumbnail !== "") {
             await api.post("/event", eventData, {headers: {user_id}})
-         } else {
-            setErrorMessage(true)
+            setSuccess(true)
             setTimeout(() => {
-               setErrorMessage(false)
+               setSuccess(false)
+            }, 2000)
+         } else {
+            setError(true)
+            setTimeout(() => {
+               setError(false)
             }, 2000)
             console.log("Missing required data")
          }
@@ -72,8 +77,7 @@ export default function Events () {
                </Label>
             </FormGroup>
 
-            <FormGroup>
-               <Label>Sport:</Label>
+            <FormGroup style={{display: "flex"}}>
                <Input
                   id="sport"
                   type="text"
@@ -81,10 +85,6 @@ export default function Events () {
                   placeholder="Sport Name"
                   value={sport}
                />
-            </FormGroup>
-
-            <FormGroup>
-               <Label>Title:</Label>
                <Input
                   id="title"
                   type="text"
@@ -94,8 +94,7 @@ export default function Events () {
                />
             </FormGroup>
 
-            <FormGroup>
-               <Label>Description:</Label>
+            <FormGroup style={{display: "flex"}}>
                <Input
                   id="description"
                   type="text"
@@ -103,10 +102,6 @@ export default function Events () {
                   placeholder="Event Description"
                   value={description}
                />
-            </FormGroup>
-
-            <FormGroup>
-               <Label>Price:</Label>
                <Input
                   id="price"
                   type="number"
@@ -116,8 +111,7 @@ export default function Events () {
                />
             </FormGroup>
 
-            <FormGroup>
-               <Label>Date Event:</Label>
+            <FormGroup style={{width: "100%"}}>
                <Input
                   id="date"
                   type="date"
@@ -127,13 +121,30 @@ export default function Events () {
                />
             </FormGroup>
 
-            <Button type="submit">CREATE EVENT</Button>
+            <FormGroup style={{display: "flex"}}>
+               <Button
+                  type="submit"
+                  className="submit-btn"
+               >
+                  CREATE EVENT
+               </Button>
+               <Button
+                  className="secondary-btn"
+                  onClick={() => history.push('/register')}
+               >
+                  DASHBOARD
+               </Button>
+            </FormGroup>
 
+            {error
+            ? <Alert className="event-validation" color="danger">Missing required information</Alert>
+            : ""}
+
+            {success
+            ? <Alert className="event-validation" color="success">Event was created successfully</Alert>
+            : ""}
          </Form>
 
-         {errorMessage
-         ? <Alert className="event-validation" color="danger">Missing required information</Alert>
-         : ""}
       </Container>
    )
 }

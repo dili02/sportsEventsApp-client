@@ -9,7 +9,9 @@ function App() {
    return (
       <Container>
          <h1>SPORT'S EVENTS APP</h1>
-         <Routes />
+         <div className="content">
+            <Routes />
+         </div>
       </Container>
   );
 }
